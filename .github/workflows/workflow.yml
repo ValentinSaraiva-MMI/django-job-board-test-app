@@ -1,27 +1,28 @@
-name: Build  and Push to ACR
+name: Build and Push to ACR
 on:
   push:
     branches: ["feature/docker"]
 
 jobs:
   build:
-  name: "Build and Push to ACR"
-  runs-on: ubuntu-24.04
-  environment: dev
-  steps:
-    - name: Checkout
-      uses: actions/checkout@v4
+    name: "Build and Push to ACR"
+    runs-on: ubuntu-24.04
+    environment: dev
 
-    - name: docker login to acr
-      uses: docker/login-action@v3
-      with:
-        registry: ${{ vars.ACR_URL }}
-        username: ${{ vars.ACR_USERNAME }}
-        password: ${{ secrets.ACR_PASSWORD }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-    - name: Build and Push to ACR
-      uses: docker/build-push-action@v6
-      with:
-        push: true
-        tags: ${{ vars.ACR_URL }}/django-job-board:latest
-        file: Dockerfile
+      - name: docker login to acr
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ vars.ACR_URL }}
+          username: ${{ vars.ACR_USERNAME }}
+          password: ${{ secrets.ACR_PASSWORD }}
+
+      - name: Build and Push to ACR
+        uses: docker/build-push-action@v6
+        with:
+          push: true
+          tags: ${{ vars.ACR_URL }}/django-job-board:latest
+          file: Dockerfile
