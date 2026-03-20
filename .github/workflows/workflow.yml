@@ -1,7 +1,7 @@
 name: Build  and Push to ACR
 on:
   push:
-    branches: ["main"]
+    branches: ["feature/docker"]
 
 jobs:
   build:
