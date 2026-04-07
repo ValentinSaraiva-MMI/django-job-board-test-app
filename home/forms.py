@@ -61,7 +61,7 @@ class RegisterForm(UserCreationForm):
         })
     )
     siret = forms.CharField(
-        max_length=14,
+        max_length=16,
         required=False,
         widget=forms.TextInput(attrs={
             'class': 'w-full px-4 py-2 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary',
