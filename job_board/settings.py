@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'home',  # Ajouter l'app home pour que Django trouve les templates
     'jobs',  # Ajouter l'app home pour que Django trouve les templates
+    'storages',  
 ]
 
 MIDDLEWARE = [
@@ -126,20 +127,42 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # Répertoire où collectstatic rassemblera tous les fichiers statiques pour la production
-STATIC_URL = '/static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
-STORAGES = {
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-}
 
-# Media files (User uploads - images, CVs, etc.)
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+# Variables du script du prof
+STORAGE_ACCOUNT_NAME = os.environ.get('STORAGE_ACCOUNT_NAME')
+STORAGE_ACCOUNT_KEY = os.environ.get('STORAGE_ACCOUNT_KEY')
+
+if STORAGE_ACCOUNT_NAME and STORAGE_ACCOUNT_KEY:
+    # --- CONFIGURATION PRODUCTION (AZURE BLOB) ---
+    AZURE_CUSTOM_DOMAIN = f'{STORAGE_ACCOUNT_NAME}.blob.core.windows.net'
+    STATIC_URL = f'https://{AZURE_CUSTOM_DOMAIN}/static/'
+    MEDIA_URL = f'https://{AZURE_CUSTOM_DOMAIN}/media/'
+
+    STORAGES = {
+        "default": {
+            "BACKEND": "custom_azure.AzureMediaStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "custom_azure.AzureStaticStorage",
+        },
+    }
+else:
+    # --- CONFIGURATION LOCALE (WHITENOISE) ---
+    STATIC_URL = '/static/'
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = BASE_DIR / 'media'
+    
+    STORAGES = {
+        "staticfiles": {
+            "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+        },
+    }
+
+
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

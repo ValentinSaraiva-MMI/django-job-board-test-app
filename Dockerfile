@@ -17,6 +17,8 @@ RUN pip install -r requirements.txt
 COPY . .
 COPY --from=tailwind-builder /app/static /app/static
 
+RUN chmod +x entrypoint.sh
+
 EXPOSE 8000
 
-CMD ["sh", "-c", "python manage.py migrate && python manage.py collectstatic --noinput && gunicorn job_board.wsgi:application --bind 0.0.0.0:8000 --workers 2"]
+CMD ["./entrypoint.sh"]
