@@ -33,7 +33,7 @@ def initialize_azure_storage():
 
         # Conteneurs à créer
         containers = [
-            {'name': 'static', 'public_access': None},
+            {'name': 'static', 'public_access': 'blob'},
             {'name': 'media', 'public_access': 'blob'}
         ]
 
@@ -50,6 +50,8 @@ def initialize_azure_storage():
                 print(f"✅ Conteneur '{container_name}' créé avec succès")
             except ResourceExistsError:
                 print(f"ℹ️  Conteneur '{container_name}' existe déjà")
+                container_client = blob_service_client.get_container_client(container_name)
+                container_client.set_container_access_policy(signed_identifiers={}, public_access=container_config['public_access'])
             except Exception as e:
                 print(f"❌ Erreur lors de la création du conteneur '{container_name}': {e}")
                 return False
